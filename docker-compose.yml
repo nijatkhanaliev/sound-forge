@@ -1,0 +1,16 @@
+services:
+  sound_forge_postgresql:
+    container_name: sound_forge_postgresql
+    image: postgres:17.4
+    environment:
+      POSTGRES_DB: soundforge
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5433:5432"
+    volumes:
+      - data:/var/lib/postgresql/data
+
+
+volumes:
+  data:

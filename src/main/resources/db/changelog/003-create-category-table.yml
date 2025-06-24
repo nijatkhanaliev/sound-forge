@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-category-table
+      author: nicat
+      changes:
+        - createTable:
+            tableName: category
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(60)
+                  constraints:
+                    nullable: false

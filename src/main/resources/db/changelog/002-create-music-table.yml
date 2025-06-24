@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-music-table
+      author: nicat
+      changes:
+        - createTable:
+            tableName: musics
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(60)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: url
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_music_user
+                    references: users(id)
+
+
+
+

@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/soundforge
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: admin
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/changelog-master.yml
+
+application:
+  security:
+    jwt:
+      secret-key: Uffoqc160ErPQYsNqdReOmaosSSyl4roKnNaENg1VVaeUveRoVB4v1Q57a52OOik
+      expiration: 3600000
+
+server:
+  port: 8088

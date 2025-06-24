@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-music_category-table
+      author: nicat
+      changes:
+        - createTable:
+            tableName: music_category
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: music_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_music_category_music
+                    references: musics(id)
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_music_category_category
+                    references: category(id)
+                    nullable: false

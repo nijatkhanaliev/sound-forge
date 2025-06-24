@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-playlist_music-table
+      author: nicat
+      changes:
+        - createTable:
+            tableName: playlist_music
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: music_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_playlist_music_music
+                    references: musics(id)
+                    nullable: false
+              - column:
+                  name: playlist_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_playlist_music_playlist
+                    references: playlist(id)
+                    nullable: false
