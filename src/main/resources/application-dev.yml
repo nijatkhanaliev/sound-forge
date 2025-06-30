@@ -4,6 +4,13 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: admin
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      maximum-pool-size: 8
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
   jpa:
     properties:
       hibernate:
@@ -15,6 +22,18 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/changelog-master.yml
+
+  mail:
+    host: localhost
+    port: 1025
+    username: ""
+    password: ""
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
 
 application:
   security:
