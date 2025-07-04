@@ -1,27 +1,31 @@
 package com.company.service.impl;
 
-import com.company.exception.JwtCreationException;
-import com.company.exception.UserAlreadyExists;
+import com.company.exception.TokenNotValidException;
+import com.company.exception.UserAlreadyExistsException;
 import com.company.models.dto.request.AuthenticationRequest;
 import com.company.models.dto.request.RegistrationRequest;
 import com.company.models.dto.response.JwtResponse;
+import com.company.models.entity.Token;
 import com.company.models.entity.User;
 import com.company.models.enums.Role;
 import com.company.models.mapper.UserMapper;
+import com.company.repository.TokenRepository;
 import com.company.repository.UserRepository;
 import com.company.service.AuthenticationService;
+import com.company.service.EmailService;
 import com.company.util.JwtUtils;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.security.SecureRandom;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -31,33 +35,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
-    //private final JavaMailSender mailSender;
-
+    private final EmailService emailService;
+    private final TokenRepository tokenRepository;
 
     @Override
-    public void register(RegistrationRequest request) {
+    public void register(RegistrationRequest request) throws MessagingException {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new UserAlreadyExists("User already exists");
+            throw new UserAlreadyExistsException("User already exists");
         }
 
         User user = userMapper.toUser(request);
         user.setRole(Role.USER);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        //sendActivationCode(user.getEmail());
-
-
         userRepository.save(user);
+
+        saveAndSendActivationCode(user);
+    }
+
+    private void saveAndSendActivationCode(User user) throws MessagingException {
+        String otp = generateActivationCode(6);
+
+        Token token = new Token();
+        token.setToken(otp);
+        token.setUser(user);
+        token.setExpiresAt(LocalDateTime.now().plusMinutes(15));
+
+        tokenRepository.save(token);
+
+        emailService.sendEmail(user.getEmail(),user.getFullName(),"activate_account","newToken",otp);
     }
 
 
-
     private String generateActivationCode(int length){
-        String characters = "0123456789";
+        String characters = "0123456789abcdeftyoiurpomnzxqABCDEFTYOUIRPOMNZXQ";
         StringBuilder codeBuilder = new StringBuilder();
         SecureRandom random = new SecureRandom();
 
-        for(int i=0;i<length;i++){
+        for(int i = 0; i< length; i++){
             int index = random.nextInt(characters.length());
             codeBuilder.append(characters.charAt(index));
         }
@@ -75,12 +90,31 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String jwtToken = jwtUtils.generateToken(userDetails);
 
         if(!StringUtils.hasText(jwtToken)){
-            throw new JwtCreationException("Failed to create jwt token");
+            throw new TokenNotValidException("Something went wrong.");
         }
 
         return JwtResponse.builder()
                 .token(jwtToken)
                 .build();
+    }
+
+    @Override
+    public void activateAccount(String activationToken) {
+       Token token =  tokenRepository.findByToken(activationToken)
+                .orElseThrow(()-> new TokenNotValidException("Token not valid"));
+
+        if(LocalDateTime.now().isAfter(token.getExpiresAt())){
+            throw new TokenNotValidException("Token has been expired");
+        }
+
+       User user = userRepository.findById(token.getUser().getId())
+                .orElseThrow(()-> new UsernameNotFoundException("User not found"));
+
+        user.setEnabled(true);
+        userRepository.save(user);
+
+        token.setValidatedAt(LocalDateTime.now());
+        tokenRepository.save(token);
     }
 
 }

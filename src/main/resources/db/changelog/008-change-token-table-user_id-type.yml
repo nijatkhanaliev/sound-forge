@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 008-change-token-table-user_id-type
+      author: nicat
+      changes:
+        - modifyDataType:
+            tableName: tokens
+            columnName: user_id
+            newDataType: BIGINT

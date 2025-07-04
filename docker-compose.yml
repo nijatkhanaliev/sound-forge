@@ -14,10 +14,9 @@ services:
   mail-dev:
     container_name: mail-dev-sf
     image: maildev/maildev
-    environment:
-      ports:
-        - 1080:1080
-        - 1025:1025
+    ports:
+      - 1080:1080
+      - 1025:1025
 
 volumes:
   data:

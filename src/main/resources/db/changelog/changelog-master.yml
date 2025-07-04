@@ -11,3 +11,9 @@ databaseChangeLog:
       file: /db/changelog/005-create-playlist-table.yml
   - include:
       file: /db/changelog/006-create-playlist_music-table.yml
+  - include:
+      file: /db/changelog/007-create-token-table.yml
+  - include:
+      file: /db/changelog/008-change-token-table-user_id-type.yml
+  - include:
+      file: /db/changelog/009-create-sequence-for-all-table.yml

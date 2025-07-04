@@ -26,7 +26,7 @@ public class EmailServiceImpl implements EmailService {
     public void sendEmail(String to, String username, String emailTemplateName, String subject, String activationCode) throws MessagingException {
         final String templateName;
         if (!StringUtils.hasText(emailTemplateName)) {
-            templateName = "confirm_email";
+            templateName = "activate_account";
         } else {
             templateName = emailTemplateName;
         }

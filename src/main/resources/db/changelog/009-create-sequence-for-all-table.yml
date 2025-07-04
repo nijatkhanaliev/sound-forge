@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 009-create-sequence-for-all-table
+      author: nicat
+      changes:
+        - createSequence:
+            sequenceName: users_seq
+            startValue: 1
+            incrementBy: 1
+        - createSequence:
+            sequenceName: musics_seq
+            startValue: 1
+            incrementBy: 1
+        - createSequence:
+            sequenceName: playlist_seq
+            startValue: 1
+            incrementBy: 1
+        - createSequence:
+            sequenceName: tokens_seq
+            startValue: 1
+            incrementBy: 1

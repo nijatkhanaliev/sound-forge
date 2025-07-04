@@ -17,7 +17,8 @@ import java.util.List;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "users_seq")
+    @SequenceGenerator(name = "users_seq",sequenceName = "users_seq", allocationSize = 1)
     private long id;
 
     @Column(unique = true)
@@ -44,8 +45,19 @@ public class User {
     @ToString.Exclude
     private List<PlayList> playLists;
 
+    @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    private List<Token> tokens;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private boolean enabled;
+
+    public String getFullName(){
+        return this.firstName + " " + this.lastName;
+    }
 
 }

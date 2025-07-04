@@ -14,7 +14,8 @@ import java.util.Set;
 @Table(name = "musics")
 public class Music {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "musics_seq")
+    @SequenceGenerator(name = "musics_seq",sequenceName = "musics_seq",allocationSize = 1)
     private long id;
 
     @Column(nullable = false)

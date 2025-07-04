@@ -6,26 +6,27 @@ import com.company.models.dto.request.RegistrationRequest;
 import com.company.models.dto.response.JwtResponse;
 import com.company.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("v1/auth")
+@Validated
 @Tag(name = "Authentication")
 public class AuthenticationController {
     private final AuthenticationService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponseDto<Void>> register(@Valid @RequestBody RegistrationRequest request) {
+    public ResponseEntity<ApiResponseDto<Void>> register(@Valid @RequestBody RegistrationRequest request) throws MessagingException {
         log.info("POST /register called using request: { {} }", request);
 
         authService.register(request);
@@ -42,6 +43,12 @@ public class AuthenticationController {
                 new ApiResponseDto<>("User logged in successfully", authService.login(request))
         );
     }
+
+    @GetMapping("/activate-account")
+    public void confirm(@NotBlank(message = "Token must not be blank") @RequestParam String token){
+        authService.activateAccount(token);
+    }
+
 
 
 }
