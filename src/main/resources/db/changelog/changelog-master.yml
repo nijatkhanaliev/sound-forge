@@ -17,3 +17,5 @@ databaseChangeLog:
       file: /db/changelog/008-change-token-table-user_id-type.yml
   - include:
       file: /db/changelog/009-create-sequence-for-all-table.yml
+  - include:
+      file: /db/changelog/010-create-status-column-users-table.yml

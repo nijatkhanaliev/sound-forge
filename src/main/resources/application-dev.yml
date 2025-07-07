@@ -26,14 +26,19 @@ spring:
   mail:
     host: localhost
     port: 1025
-    username: ""
-    password: ""
+    username: niko
+    password: niko
     properties:
       mail:
         smtp:
-          auth: false
+          trust: "*"
+          auth: true
           starttls:
-            enable: false
+            enable: true
+        connection timeout: 5000
+        timeout: 3000
+        write timeout: 5000
+
 
 application:
   security:

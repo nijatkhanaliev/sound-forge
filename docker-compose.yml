@@ -12,7 +12,7 @@ services:
       - data:/var/lib/postgresql/data
 
   mail-dev:
-    container_name: mail-dev-sf
+    container_name: mail-dev-bsn
     image: maildev/maildev
     ports:
       - 1080:1080

@@ -3,10 +3,9 @@ package com.company.controller;
 import com.company.models.dto.ApiResponseDto;
 import com.company.models.dto.request.AuthenticationRequest;
 import com.company.models.dto.request.RegistrationRequest;
-import com.company.models.dto.response.JwtResponse;
+import com.company.models.dto.response.AuthenticationResponse;
 import com.company.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -26,18 +25,19 @@ public class AuthenticationController {
     private final AuthenticationService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponseDto<Void>> register(@Valid @RequestBody RegistrationRequest request) throws MessagingException {
-        log.info("POST /register called using request: { {} }", request);
+    public ResponseEntity<ApiResponseDto<Void>> register(
+            @Valid @RequestBody RegistrationRequest request) {
 
         authService.register(request);
+        log.info("Returning Api Response");
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ApiResponseDto<>("User created successfully", null)
         );
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponseDto<JwtResponse>> login(@Valid @RequestBody AuthenticationRequest request) {
-        log.info("POST /login called using request: { {} }", request);
+    public ResponseEntity<ApiResponseDto<AuthenticationResponse>> login(
+            @Valid @RequestBody AuthenticationRequest request) {
 
         return ResponseEntity.ok(
                 new ApiResponseDto<>("User logged in successfully", authService.login(request))
@@ -45,10 +45,11 @@ public class AuthenticationController {
     }
 
     @GetMapping("/activate-account")
-    public void confirm(@NotBlank(message = "Token must not be blank") @RequestParam String token){
+    public void confirm(@NotBlank(message = "Token must not be blank")
+                        @RequestParam String token) {
+
         authService.activateAccount(token);
     }
-
 
 
 }

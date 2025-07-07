@@ -21,11 +21,10 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-      return  http
+        return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement((s)->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(req-> req
-                        .requestMatchers("/api/v1/auth/**",
+                .authorizeHttpRequests(req -> req
+                        .requestMatchers("/v1/auth/**",
                                 "/v2/api-docs",
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
@@ -33,13 +32,15 @@ public class WebSecurityConfig {
                                 "/swagger-resources/**",
                                 "/configuration/ui",
                                 "/configuration/security",
-                                "/api/swagger-ui/**",
+                                "/swagger-ui/**",
                                 "/webjars/**",
-                                "/api/swagger-ui.html"
-                                        ).permitAll()
+                                "/swagger-ui.html"
+                        ).permitAll()
+                        .requestMatchers("/v1/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .sessionManagement((s) -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

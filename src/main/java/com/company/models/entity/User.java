@@ -1,6 +1,7 @@
 package com.company.models.entity;
 
 import com.company.models.enums.Role;
+import com.company.models.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -53,8 +54,9 @@ public class User {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private boolean enabled;
+    @Column(nullable = false,length = 20)
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
 
     public String getFullName(){
         return this.firstName + " " + this.lastName;

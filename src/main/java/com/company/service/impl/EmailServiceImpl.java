@@ -4,8 +4,10 @@ import com.company.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.thymeleaf.context.Context;
@@ -18,12 +20,17 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmailServiceImpl implements EmailService {
     private final JavaMailSender mailSender;
+    private final SpringTemplateEngine templateEngine;
 
-
+    @Async
     @Override
-    public void sendEmail(String to, String username, String emailTemplateName, String subject, String activationCode) throws MessagingException {
+    public void sendEmail(String to, String username, String emailTemplateName,
+                          String subject, String activationCode)
+            throws MessagingException {
+
         final String templateName;
         if (!StringUtils.hasText(emailTemplateName)) {
             templateName = "activate_account";
@@ -31,6 +38,7 @@ public class EmailServiceImpl implements EmailService {
             templateName = emailTemplateName;
         }
 
+        log.info("Creating mimeMessage, templateName: {}",templateName);
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
         MimeMessageHelper helper = new MimeMessageHelper(
@@ -46,7 +54,6 @@ public class EmailServiceImpl implements EmailService {
         Context context = new Context();
         context.setVariables(properties);
 
-        SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         String template = templateEngine.process(templateName, context);
 
         helper.setFrom("khanalievn@gmail.com");
