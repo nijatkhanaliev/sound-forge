@@ -33,12 +33,12 @@ public class EmailServiceImpl implements EmailService {
 
         final String templateName;
         if (!StringUtils.hasText(emailTemplateName)) {
+            log.warn("Email template name is null");
             templateName = "activate_account";
         } else {
             templateName = emailTemplateName;
         }
 
-        log.info("Creating mimeMessage, templateName: {}",templateName);
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
         MimeMessageHelper helper = new MimeMessageHelper(

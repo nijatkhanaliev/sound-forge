@@ -46,5 +46,9 @@ application:
       secret-key: Uffoqc160ErPQYsNqdReOmaosSSyl4roKnNaENg1VVaeUveRoVB4v1Q57a52OOik
       expiration: 3600000
 
+  file:
+    upload:
+      path: ./uploads
+
 server:
   port: 8088

@@ -13,6 +13,7 @@ import com.company.models.enums.UserStatus;
 import com.company.models.mapper.UserMapper;
 import com.company.repository.TokenRepository;
 import com.company.repository.UserRepository;
+import com.company.security.UserDetailsImpl;
 import com.company.service.AuthenticationService;
 import com.company.service.EmailService;
 import com.company.util.JwtUtils;
@@ -25,14 +26,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -66,7 +68,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private void saveAndSendActivationCode(User user) throws MessagingException {
         log.info("Generating otp code for user, userId: {}",user.getId());
         String otp = generateActivationCode(6);
-
+        if(!StringUtils.hasText(otp)){
+            throw new TokenNotValidException("Otp code is not valid");
+        }
         log.info("Creating Token for user, userId: {}",user.getId());
         Token token = new Token();
         token.setToken(otp);
@@ -99,40 +103,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                .orElseThrow(()-> new UsernameNotFoundException("User not exists"));
 
        if(user.getStatus()==UserStatus.DISABLED){
+           log.warn("User is disabled, userId: {}",user.getId());
            throw new AccountNotActivatedException("Account not activated");
        }
-
        var authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getEmail(),
+                        request.getPassword())
         );
 
+        log.info("Token is generating, userId: {}",user.getId());
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String jwtToken = jwtUtils.generateToken(userDetails);
 
         if(!StringUtils.hasText(jwtToken)){
-            throw new TokenNotValidException("Something went wrong.");
+            throw new TokenNotValidException("Jwt token cannot generated");
         }
-
+        log.info("User is logging, userId: {}",user.getId());
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
     }
 
     @Override
+    @Transactional
     public void activateAccount(String activationToken) {
        Token token =  tokenRepository.findByToken(activationToken)
                 .orElseThrow(()-> new TokenNotValidException("Token not valid"));
 
         if(LocalDateTime.now().isAfter(token.getExpiresAt())){
-            throw new TokenNotValidException("Token has been expired");
+            throw new TokenNotValidException("Otp code has been expired");
         }
 
        User user = userRepository.findById(token.getUser().getId())
                 .orElseThrow(()-> new UsernameNotFoundException("User not found"));
-
+        log.info("User account is activating, userId: {}",user.getId());
         user.setStatus(UserStatus.ENABLED);
         userRepository.save(user);
 
+        log.info("Token is validated");
         token.setValidatedAt(LocalDateTime.now());
         tokenRepository.save(token);
     }
