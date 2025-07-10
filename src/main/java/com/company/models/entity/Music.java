@@ -1,5 +1,6 @@
 package com.company.models.entity;
 
+import com.company.models.enums.MusicStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,6 +31,9 @@ public class Music {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Enumerated(EnumType.STRING)
+    private MusicStatus status; // TODO ADD THIS FIELD TO LIQUIBASE
 
     @ManyToMany
     @JoinTable(

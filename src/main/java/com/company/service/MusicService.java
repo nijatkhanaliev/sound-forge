@@ -8,7 +8,23 @@ import org.springframework.web.multipart.MultipartFile;
 public interface MusicService {
     MusicResponse createMusic(MultipartFile music, MusicRequest musicRequest);
 
-    PageResponseDto<MusicResponse> findAllMusics(int page,int size);
+    PageResponseDto<MusicResponse> findAllPublicMusics(int page, int size);
 
+    PageResponseDto<MusicResponse> findAllMusicByOwner(int page, int size);
 
+    MusicResponse findPublicMusicById(Long id);
+
+    Long updateStatusToPrivate(Long musicId);
+
+    Long updateStatusToPublic(Long musicId);
+
+    Long updateArchiveMusic(Long musicId);
+
+    void deleteMusic(Long musicId);
+
+    PageResponseDto<MusicResponse> searchMusic(int page,
+                                               int size,
+                                               String creatorFirstName,
+                                               String creatorLastName,
+                                               String musicTitle);
 }

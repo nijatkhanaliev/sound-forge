@@ -26,7 +26,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.security.SecureRandom;
@@ -125,7 +124,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    @Transactional
     public void activateAccount(String activationToken) {
        Token token =  tokenRepository.findByToken(activationToken)
                 .orElseThrow(()-> new TokenNotValidException("Token not valid"));
