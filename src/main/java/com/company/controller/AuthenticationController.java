@@ -38,7 +38,8 @@ public class AuthenticationController {
             @Valid @RequestBody AuthenticationRequest request) {
 
         return ResponseEntity.ok(
-                new ApiResponseDto<>("User logged in successfully", authService.login(request))
+                new ApiResponseDto<>("User logged in successfully",
+                        authService.login(request))
         );
     }
 

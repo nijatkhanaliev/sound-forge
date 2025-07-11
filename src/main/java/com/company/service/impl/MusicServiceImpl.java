@@ -26,11 +26,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import static com.company.models.enums.MusicStatus.*;
 import static com.company.models.specification.MusicSpecification.*;
+import static com.company.util.SecurityUtils.checkUser;
 import static com.company.util.SecurityUtils.getCurrentUser;
 
 
@@ -136,9 +136,11 @@ public class MusicServiceImpl implements MusicService {
         Music music = musicRepository.findOne(specification)
                 .orElseThrow(() -> new NotFoundException("Music not found with"));
 
-        if (Objects.equals(music.getUser().getId(), currentUser.getId())) {
-            throw new OperationNotPermittedException("You cannot change music status");
+        if(music.getStatus()== PRIVATE){
+            throw new OperationNotPermittedException("Music is already private");
         }
+
+        checkUser(currentUser,music,"You cannot change music status");
 
         log.info("Updating music status to private, musicId: {} by owner," +
                 " userId: {}", musicId, currentUser.getId());
@@ -159,9 +161,11 @@ public class MusicServiceImpl implements MusicService {
         Music music = musicRepository.findOne(specification)
                 .orElseThrow(() -> new NotFoundException("Music not found with"));
 
-        if (Objects.equals(music.getUser().getId(), currentUser.getId())) {
-            throw new OperationNotPermittedException("You cannot change music status");
+        if(music.getStatus()== PUBLIC){
+            throw new OperationNotPermittedException("Music is already public");
         }
+
+        checkUser(currentUser,music,"You cannot change music status");
 
         log.info("Updating music status to public, musicId: {} by owner," +
                 " userId: {}", musicId, currentUser.getId());
@@ -182,9 +186,11 @@ public class MusicServiceImpl implements MusicService {
         Music music = musicRepository.findOne(specification)
                 .orElseThrow(() -> new NotFoundException("Music not found with"));
 
-        if (Objects.equals(music.getUser().getId(), currentUser.getId())) {
-            throw new OperationNotPermittedException("You cannot change music status");
+        if(music.getStatus()==ARCHIVED){
+            throw new OperationNotPermittedException("Music is already archived");
         }
+
+        checkUser(currentUser,music,"You cannot change music status");
 
         log.info("Archiving music, musicId: {} by owner, userId: {}",
                 musicId, currentUser.getId());
@@ -205,9 +211,7 @@ public class MusicServiceImpl implements MusicService {
         Music music = musicRepository.findOne(specification)
                 .orElseThrow(() -> new NotFoundException("Music not found with"));
 
-        if (Objects.equals(music.getUser().getId(), currentUser.getId())) {
-            throw new OperationNotPermittedException("You cannot delete music");
-        }
+        checkUser(currentUser,music,"You cannot delete music");
 
         log.info("Deleting music, musicId: {} by owner, userId: {}",
                 musicId, currentUser.getId());
@@ -230,7 +234,6 @@ public class MusicServiceImpl implements MusicService {
                 .or(hasTitle(musicTitle));
 
         Pageable pageable = PageRequest.of(page, size);
-
         Page<Music> musics = musicRepository.findAll(specification, pageable);
 
         List<MusicResponse> musicResponses = musics.stream()

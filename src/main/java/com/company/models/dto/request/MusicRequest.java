@@ -11,12 +11,12 @@ import java.util.Set;
 @Getter
 @Setter
 public class MusicRequest {
-    @NotBlank
+    @NotBlank(message = "Title cannot be blank")
     private String title;
 
-    @NotEmpty
+    @NotEmpty(message = "Description cannot be empty")
     private String description;
 
-    @NotNull
+    @NotNull(message = "categoryId cannot be null")
     private Set<Long> allCategoryId;
 }

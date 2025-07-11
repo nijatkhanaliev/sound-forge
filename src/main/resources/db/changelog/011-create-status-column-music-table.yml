@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 011-create-status-column-music-table
+      author: nicat
+      changes:
+        - addColumn:
+            tableName: musics
+            columns:
+              - column:
+                  name: status
+                  type: varchar(30)
+                  defaultValue: 'PUBLIC'
+                  constraints:
+                    nullable: false

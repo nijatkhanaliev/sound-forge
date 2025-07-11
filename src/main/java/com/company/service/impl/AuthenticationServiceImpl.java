@@ -13,7 +13,6 @@ import com.company.models.enums.UserStatus;
 import com.company.models.mapper.UserMapper;
 import com.company.repository.TokenRepository;
 import com.company.repository.UserRepository;
-import com.company.security.UserDetailsImpl;
 import com.company.service.AuthenticationService;
 import com.company.service.EmailService;
 import com.company.util.JwtUtils;

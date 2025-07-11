@@ -33,7 +33,8 @@ public class Music {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    private MusicStatus status; // TODO ADD THIS FIELD TO LIQUIBASE
+    @Column(nullable = false)
+    private MusicStatus status;
 
     @ManyToMany
     @JoinTable(
