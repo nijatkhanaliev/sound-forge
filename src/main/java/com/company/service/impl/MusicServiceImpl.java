@@ -28,8 +28,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.company.models.enums.MusicStatus.*;
-import static com.company.models.specification.MusicSpecification.*;
+import static com.company.models.enums.MusicStatus.ARCHIVED;
+import static com.company.models.enums.MusicStatus.DELETED;
+import static com.company.models.enums.MusicStatus.PRIVATE;
+import static com.company.models.enums.MusicStatus.PUBLIC;
+import static com.company.models.specification.MusicSpecification.hasMusicianLastName;
+import static com.company.models.specification.MusicSpecification.hasStatus;
+import static com.company.models.specification.MusicSpecification.hasTitle;
+import static com.company.models.specification.MusicSpecification.notDeleted;
 import static com.company.util.SecurityUtils.checkUser;
 import static com.company.util.SecurityUtils.getCurrentUser;
 
@@ -136,11 +142,11 @@ public class MusicServiceImpl implements MusicService {
         Music music = musicRepository.findOne(specification)
                 .orElseThrow(() -> new NotFoundException("Music not found with"));
 
-        if(music.getStatus()== PRIVATE){
+        if (music.getStatus() == PRIVATE) {
             throw new OperationNotPermittedException("Music is already private");
         }
 
-        checkUser(currentUser,music,"You cannot change music status");
+        checkUser(currentUser, music, "You cannot change music status");
 
         log.info("Updating music status to private, musicId: {} by owner," +
                 " userId: {}", musicId, currentUser.getId());
@@ -161,11 +167,11 @@ public class MusicServiceImpl implements MusicService {
         Music music = musicRepository.findOne(specification)
                 .orElseThrow(() -> new NotFoundException("Music not found with"));
 
-        if(music.getStatus()== PUBLIC){
+        if (music.getStatus() == PUBLIC) {
             throw new OperationNotPermittedException("Music is already public");
         }
 
-        checkUser(currentUser,music,"You cannot change music status");
+        checkUser(currentUser, music, "You cannot change music status");
 
         log.info("Updating music status to public, musicId: {} by owner," +
                 " userId: {}", musicId, currentUser.getId());
@@ -186,11 +192,11 @@ public class MusicServiceImpl implements MusicService {
         Music music = musicRepository.findOne(specification)
                 .orElseThrow(() -> new NotFoundException("Music not found with"));
 
-        if(music.getStatus()==ARCHIVED){
+        if (music.getStatus() == ARCHIVED) {
             throw new OperationNotPermittedException("Music is already archived");
         }
 
-        checkUser(currentUser,music,"You cannot change music status");
+        checkUser(currentUser, music, "You cannot change music status");
 
         log.info("Archiving music, musicId: {} by owner, userId: {}",
                 musicId, currentUser.getId());
@@ -211,7 +217,7 @@ public class MusicServiceImpl implements MusicService {
         Music music = musicRepository.findOne(specification)
                 .orElseThrow(() -> new NotFoundException("Music not found with"));
 
-        checkUser(currentUser,music,"You cannot delete music");
+        checkUser(currentUser, music, "You cannot delete music");
 
         log.info("Deleting music, musicId: {} by owner, userId: {}",
                 musicId, currentUser.getId());
@@ -226,7 +232,7 @@ public class MusicServiceImpl implements MusicService {
                                                       String creatorLastName,
                                                       String musicTitle) {
         log.info("Searching music by creatorFirsName:{},creatorLastName:{},musicTitle:{}",
-                creatorFirstName,creatorLastName,musicTitle);
+                creatorFirstName, creatorLastName, musicTitle);
 
         Specification<Music> specification = MusicSpecification
                 .hasMusicianFirstName(creatorFirstName)

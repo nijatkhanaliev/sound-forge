@@ -19,7 +19,6 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("v1/musics")
-@Validated
 @Tag(name = "Musics")
 public class MusicController {
     private final MusicService musicService;

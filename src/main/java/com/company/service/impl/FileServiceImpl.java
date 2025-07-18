@@ -26,7 +26,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public String saveFile(MultipartFile file, Long userId) {
-        log.info("Saving file, userId: {}",userId);
+        log.info("Saving file, userId: {}", userId);
         final String subUploadPath = "users" + separator + userId;
 
         return uploadFile(file, subUploadPath);

@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: 012-create-refresh-token-table
+      author: nicat
+      changes:
+        - createTable:
+            tableName: "refresh_token"
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: token
+                  type: varchar
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: issued_at
+                  type: TIMESTAMP(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: "expires_at"
+                  type: TIMESTAMP(3)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: revoked
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_refresh_token_user
+                    references: users(id)
+                    nullable: false
+                    deleteCascade: true
+        - createIndex:
+            tableName: refresh_token
+            indexName: idx_refresh_token_user_id
+            columns:
+              - column:
+                  name: user_id

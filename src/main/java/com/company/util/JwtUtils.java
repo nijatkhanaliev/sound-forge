@@ -41,8 +41,7 @@ public class JwtUtils {
                 .getPayload();
     }
 
-    public String generateToken(UserDetails userDetails) {
-
+    public String generateAccessToken(UserDetails userDetails) {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
@@ -55,6 +54,7 @@ public class JwtUtils {
                 .signWith(getSignInKey())
                 .compact();
     }
+
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         String email = extractEmail(token);
