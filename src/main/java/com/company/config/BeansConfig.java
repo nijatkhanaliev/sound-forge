@@ -1,6 +1,7 @@
 package com.company.config;
 
 import com.company.security.UserDetailsServiceImpl;
+import io.github.cdimascio.dotenv.Dotenv;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -52,6 +53,11 @@ public class BeansConfig {
                                 .scheme("bearer")
                                 .type(HTTP)
                 ));
+    }
+
+    @Bean
+    public Dotenv dotenv(){
+        return Dotenv.load();
     }
 
 }
