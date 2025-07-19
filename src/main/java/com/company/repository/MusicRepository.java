@@ -8,8 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
-
+@Repository
 public interface MusicRepository extends JpaRepository<Music, Long>, JpaSpecificationExecutor<Music> {
     @Query(value = "select m from Music m where " +
                     "m.status =: status " +
